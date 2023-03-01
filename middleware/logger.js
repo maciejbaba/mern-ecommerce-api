@@ -25,7 +25,7 @@ const logger = (req, res, next) => {
   if (req.headers.origin) {
     logEvents(
       `${req.method}\t${req.url}\t${req.headers.origin}\n`,
-      "reqLog.log"
+      "requestLog.log"
     );
   }
   console.log(`${req.method} ${req.path}`);
