@@ -1,5 +1,4 @@
 const User = require("../models/User");
-const Item = require("../models/Item");
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
 const { json } = require("express");
