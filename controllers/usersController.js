@@ -18,11 +18,13 @@ const getAllUsers = asyncHandler(async (req, res) => {
 // @route POST /users
 // @access Private
 const createNewUser = asyncHandler(async (req, res) => {
-  const { username, password, roles} = req.body;
+  const { username, password, roles } = req.body;
 
   // check data
   if (!username || !password) {
-    return res.status(400).json({ message: "Username and password fields are required!" });
+    return res
+      .status(400)
+      .json({ message: "Username and password fields are required!" });
   }
 
   // check for duplicate username
@@ -35,7 +37,7 @@ const createNewUser = asyncHandler(async (req, res) => {
   // encrypt the password
   const hashedPassword = await bcrypt.hash(password, 10); // 10 stands for amount of salt rounds
 
-  let userObject
+  let userObject;
 
   // if roles are specified use them
   if (Array.isArray(roles) || roles) {
@@ -44,7 +46,8 @@ const createNewUser = asyncHandler(async (req, res) => {
       password: hashedPassword,
       roles,
     };
-  } else { // because roles have default value in Schema they aren't necessary so proceed without
+  } else {
+    // because roles have default value in Schema they aren't necessary so proceed without
     userObject = {
       username,
       password: hashedPassword,
@@ -69,62 +72,68 @@ const createNewUser = asyncHandler(async (req, res) => {
 // @route PATCH /users
 // @access Private
 const updateUser = asyncHandler(async (req, res) => {
-  const { id, username, roles, active, password } = req.body
+  const { id, username, roles, active, password } = req.body;
 
   // check data
-  if (!id || !username || !Array.isArray(roles) || !roles.length || typeof active !== "boolean") {
-    return res.status(400).json({ message: "All fields are required!" })
+  if (
+    !id ||
+    !username ||
+    !Array.isArray(roles) ||
+    !roles.length ||
+    typeof active !== "boolean"
+  ) {
+    return res.status(400).json({ message: "All fields are required!" });
   }
 
-  const user = await User.findById(id).exec()
+  const user = await User.findById(id).exec();
 
   if (!user) {
-    return res.status(400).json({ message: "User has not been found"})
+    return res.status(400).json({ message: "User has not been found" });
   }
 
-  const duplicate = await User.findOne({ username }).lean().exec()
+  const duplicate = await User.findOne({ username }).lean().exec();
   // allow update to the current user
 
   if (duplicate && duplicate?._id.toString() !== id) {
-    return res.status(409).json({ message: "Username taken" })
+    return res.status(409).json({ message: "Username taken" });
   }
 
-  user.username = username
-  user.roles = roles
-  user.active = active
+  user.username = username;
+  user.roles = roles;
+  user.active = active;
   // todo handle name and surname
 
   if (password) {
     // hash password
-    user.password = await bcrypt.hash(password, 10) // 10 stands for amount of salt rounds
+    user.password = await bcrypt.hash(password, 10); // 10 stands for amount of salt rounds
   }
 
-  const updatedUser = await user.save()
+  const updatedUser = await user.save();
 
-  res.json({ message: `${updatedUser.username} has been updated` })
+  res.json({ message: `${updatedUser.username} has been updated` });
 });
 
 // @description Delete a user
 // @route DELETE /users
 // @access Private
 const deleteUser = asyncHandler(async (req, res) => {
-  const { id } = req.body
+  const { id } = req.body;
 
   if (!id) {
-    return res.status(400).json({ message: "User ID is required" })
+    return res.status(400).json({ message: "User ID is required" });
   }
 
-  const user = await User.findById(id).exec()
+  const user = await User.findById(id).exec();
 
   if (!user) {
-    return res.status(400).json({ message: "User has not been found" })
+    return res.status(400).json({ message: "User has not been found" });
   }
 
-  const deletedUser = await user.deleteOne()
+  const deletedUser = await user.deleteOne();
 
-  const reply = `User ${deletedUser.username} with ID ${deletedUser.id} has been deleted`
+  const reply = `User ${deletedUser.username} with ID ${deletedUser.id} has been deleted`;
 
-  res.json({ message: reply})
+  res.json({ message: reply });
 });
 
 module.exports = {
