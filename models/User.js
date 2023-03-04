@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema(
     surname: {
       type: String,
     },
+    active: {
+      type: Boolean,
+      default: true
+    },
     roles: {
       type: [String],
       default: ["client"],
