@@ -74,6 +74,7 @@ const createNewUser = asyncHandler(async (req, res) => {
 // @access Private
 const updateUser = asyncHandler(async (req, res) => {
   const { id, username, roles, active, password } = req.body;
+  // todo add name and surname handling
 
   // check data
   if (
@@ -93,8 +94,8 @@ const updateUser = asyncHandler(async (req, res) => {
   }
 
   const duplicate = await User.findOne({ username }).lean().exec();
-  // allow update to the current user
 
+  // allow update to the current user
   if (duplicate && duplicate?._id.toString() !== id) {
     return res.status(409).json({ message: "Username taken" });
   }
