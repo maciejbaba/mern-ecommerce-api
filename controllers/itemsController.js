@@ -60,7 +60,23 @@ const createNewItem = asyncHandler(async (req, res) => {
 
 const updateItem = asyncHandler(async (req, res) => {});
 
-const deleteItem = asyncHandler(async (req, res) => {});
+const deleteItem = asyncHandler(async (req, res) => {
+  const { name } = req.body
+
+  if (!name) {
+    return res.status(400).json({ message: "Name is required in order to delete an item" })
+  }
+
+  const itemToDelete = await Item.findOne({ name }).exec()
+
+  if (!itemToDelete) {
+    return res.status(400).json({ message: "Item with this name has not been found" })
+  }
+
+  const deletedItem = await itemToDelete.deleteOne()
+
+  res.json({ message: `Item with name ${deletedItem.name} has been deleted`})
+});
 
 module.exports = {
   getAllItems,
