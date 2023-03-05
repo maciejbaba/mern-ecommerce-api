@@ -37,6 +37,7 @@ const createNewUser = asyncHandler(async (req, res) => {
   // encrypt the password
   const hashedPassword = await bcrypt.hash(password, 10); // 10 stands for amount of salt rounds
 
+  // maybe change name to newUser?
   let userObject;
 
   // if roles are specified use them
