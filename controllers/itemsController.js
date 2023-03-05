@@ -58,24 +58,58 @@ const createNewItem = asyncHandler(async (req, res) => {
   }
 });
 
-const updateItem = asyncHandler(async (req, res) => {});
+const updateItem = asyncHandler(async (req, res) => {
+  const { name, description, price, photoURL } = req.body
 
-const deleteItem = asyncHandler(async (req, res) => {
-  const { name } = req.body
-
-  if (!name) {
-    return res.status(400).json({ message: "Name is required in order to delete an item" })
+  if (!name || !description || !price || !photoURL) {
+    return res.status(400).json({ message: "All fields are required" })
   }
 
-  const itemToDelete = await Item.findOne({ name }).exec()
+  const itemToChange = await Item.findOne({ name }).exec()
 
-  if (!itemToDelete) {
+  if (!itemToChange) {
     return res.status(400).json({ message: "Item with this name has not been found" })
   }
 
-  const deletedItem = await itemToDelete.deleteOne()
+  const duplicate = await Item.findOne({name}).lean().exec()
 
-  res.json({ message: `Item with name ${deletedItem.name} has been deleted`})
+  // allow changes to current item
+  if (duplicate && duplicate?._id.toString() !== itemToChange._id.toString()) {
+    return res.status(409).json({ message: "Specified name already exists" })
+  }
+
+
+  // add logic for newName in order to be able to change name (currently all logic relies on name)
+  itemToChange.name = name
+  itemToChange.description = description
+  itemToChange.price = price
+  itemToChange.photoURL = photoURL
+
+  const updatedItem = await itemToChange.save()
+
+  res.json({ message: `Item with ID ${updatedItem._id} has been updated` })
+});
+
+const deleteItem = asyncHandler(async (req, res) => {
+  const { name } = req.body;
+
+  if (!name) {
+    return res
+      .status(400)
+      .json({ message: "Name is required in order to delete an item" });
+  }
+
+  const itemToDelete = await Item.findOne({ name }).exec();
+
+  if (!itemToDelete) {
+    return res
+      .status(400)
+      .json({ message: "Item with this name has not been found" });
+  }
+
+  const deletedItem = await itemToDelete.deleteOne();
+
+  res.json({ message: `Item with name ${deletedItem.name} has been deleted` });
 });
 
 module.exports = {
