@@ -16,7 +16,7 @@ const itemSchema = new mongoose.Schema(
     },
     photoURL: {
       type: String,
-      default: "./images/no-image.png",
+      default: "./no-image.png",
     },
   },
   {
