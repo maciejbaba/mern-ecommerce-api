@@ -20,9 +20,9 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true
     },
-    roles: {
-      type: [String],
-      default: ["client"],
+    isAdmin: {
+      type: Boolean,
+      default: false,
     },
   },
   {
