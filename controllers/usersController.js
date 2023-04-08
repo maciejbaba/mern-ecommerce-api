@@ -18,7 +18,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
 // @route POST /users
 // @access Private
 const createNewUser = asyncHandler(async (req, res) => {
-  const { username, password, roles } = req.body;
+  const { username, password, isAdmin } = req.body;
 
   // check data
   if (!username || !password) {
@@ -38,22 +38,19 @@ const createNewUser = asyncHandler(async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, 10); // 10 stands for amount of salt rounds
 
   // maybe change name to newUser?
-  let userObject;
+  let userObject = {
+    username,
+    password: hashedPassword, // isAdmin will be false by default
+  };
 
-  // if roles are specified use them
-  if (Array.isArray(roles) || roles) {
+  // if isAdmin is specified use it
+  if (isAdmin) {
     userObject = {
       username,
       password: hashedPassword,
-      roles,
+      isAdmin,
     };
-  } else {
-    // because roles have default value in Schema they aren't necessary so proceed without
-    userObject = {
-      username,
-      password: hashedPassword,
-    };
-  }
+  } 
 
   // create and store new user
   const user = await User.create(userObject);
@@ -73,15 +70,12 @@ const createNewUser = asyncHandler(async (req, res) => {
 // @route PATCH /users
 // @access Private
 const updateUser = asyncHandler(async (req, res) => {
-  const { id, username, roles, active, password } = req.body;
-  // todo add name and surname handling
+  const { id, username, isAdmin, active, password } = req.body;
 
   // check data
   if (
     !id ||
     !username ||
-    !Array.isArray(roles) ||
-    !roles.length ||
     typeof active !== "boolean"
   ) {
     return res.status(400).json({ message: "All fields are required!" });
@@ -101,9 +95,8 @@ const updateUser = asyncHandler(async (req, res) => {
   }
 
   user.username = username;
-  user.roles = roles;
+  user.isAdmin = isAdmin;
   user.active = active;
-  // todo handle name and surname
 
   if (password) {
     // hash password

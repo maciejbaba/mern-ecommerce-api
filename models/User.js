@@ -10,12 +10,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    name: {
-      type: String,
-    },
-    surname: {
-      type: String,
-    },
     active: {
       type: Boolean,
       default: true
