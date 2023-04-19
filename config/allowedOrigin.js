@@ -1,3 +1,3 @@
-const allowedOrigin = "https://mern-ecommerce-beta.vercel.app/";
+const allowedOrigin = "https://mern-ecommerce-beta.vercel.app";
 
 module.exports = allowedOrigin;
