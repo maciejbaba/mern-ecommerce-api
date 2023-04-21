@@ -21,7 +21,7 @@ const login = asyncHandler(async (req, res) => {
   // seperate it later to two different responses
   if (!foundUser || foundUser.active === false) {
     // if user is not found or user is not active
-    return res.status(401).json({ message: "" });
+    return res.status(401).json({ message: "User not found or is inactive" });
   }
 
   const isPasswordCorrect = await bcrypt.compare(password, foundUser.password); // compare the password with the hashed password in the database
@@ -45,11 +45,11 @@ const login = asyncHandler(async (req, res) => {
 
   res.cookie("jwt", refreshToken, {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: process.env.NODE_ENV === "production" ? true : false,
+    sameSite: "None",
     maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days it matches with the expiresIn of the refresh token
   });
-  res.status(200).json({ accessToken });
+  res.json({ accessToken });
 });
 
 // @desc    Refresh token
@@ -85,13 +85,17 @@ const refresh = asyncHandler(async (req, res) => {
 // @route   POST /auth/logout
 // @access  Public
 const logout = asyncHandler(async (req, res) => {
-  const cookies = req.cookies;
-  if (!cookies) {
-    return res.status(400).json({ message: "No cookies found" });
+  const jwt = req.cookies?.jwt;
+  if (!jwt) {
+    return res.status(400).json({ message: "No jwt cookie found" });
   }
 
-  res.clearCookie("jwt", { httpOnly: true, secure: true, sameSite: "none" });
-  res.status(200).json({ message: "Logged out" });
+  res.clearCookie("jwt", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production" ? true : false,
+    sameSite: "None",
+  });
+  res.json({ message: "Logged out" });
 });
 
 module.exports = {
