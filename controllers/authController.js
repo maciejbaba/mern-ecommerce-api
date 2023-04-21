@@ -49,7 +49,6 @@ const login = asyncHandler(async (req, res) => {
     sameSite: "none",
     maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days it matches with the expiresIn of the refresh token
   });
-
   res.status(200).json({ accessToken });
 });
 
