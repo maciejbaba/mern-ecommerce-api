@@ -3,9 +3,6 @@ const router = express.Router();
 const authController = require("../controllers/authController");
 const requestLimiter = require("../middleware/requestLimiter");
 
-router.route("/register")
-  .post(requestLimiter, authController.register);
-
 router.route("/login")
   .post(requestLimiter, authController.login);
 

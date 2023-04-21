@@ -97,7 +97,6 @@ const logout = asyncHandler(async (req, res) => {
 
 module.exports = {
   login,
-  register,
   refresh,
   logout,
 };
