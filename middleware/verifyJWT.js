@@ -4,11 +4,11 @@ const verifyJWT = (req, res, next) => {
   const authHeader = req.headers.authorization || req.headers.Authorization; // good practice
 
   if (!authHeader) {
-    return res.status(401).json({ message: "No authHeader" });
+    return res.status(401).json({ message: "No auth header" });
   }
 
   if (!authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "No Bearer token" });
+    return res.status(401).json({ message: "No bearer token" });
   }
 
   const token = authHeader.split(" ")[1]; // "Bearer <token>" => ["Bearer", "<token>"] => "<token>"

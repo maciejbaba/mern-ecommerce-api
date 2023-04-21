@@ -43,12 +43,6 @@ const login = asyncHandler(async (req, res) => {
     { expiresIn: "7d" }
   ); // create refresh token
 
-  res.cookie("jwt", refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production" ? true : false,
-    sameSite: "None",
-    maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days it matches with the expiresIn of the refresh token
-  });
   res.json({ accessToken });
 });
 
@@ -79,23 +73,6 @@ const refresh = asyncHandler(async (req, res) => {
       res.status(200).json({ accessToken });
     }
   );
-});
-
-// @desc    Logout user
-// @route   POST /auth/logout
-// @access  Public
-const logout = asyncHandler(async (req, res) => {
-  const jwt = req.cookies?.jwt;
-  if (!jwt) {
-    return res.status(400).json({ message: "No jwt cookie found" });
-  }
-
-  res.clearCookie("jwt", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production" ? true : false,
-    sameSite: "None",
-  });
-  res.json({ message: "Logged out" });
 });
 
 module.exports = {
