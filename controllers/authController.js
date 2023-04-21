@@ -78,5 +78,4 @@ const refresh = asyncHandler(async (req, res) => {
 module.exports = {
   login,
   refresh,
-  logout,
 };

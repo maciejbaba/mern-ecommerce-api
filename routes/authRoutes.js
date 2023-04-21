@@ -9,7 +9,4 @@ router.route("/login")
 router.route("/refresh")
   .get(requestLimiter, authController.refresh);
 
-router.route("/logout")
-  .post(requestLimiter, authController.logout);
-
 module.exports = router;
