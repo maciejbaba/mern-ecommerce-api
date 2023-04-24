@@ -1,6 +1,9 @@
 const Item = require("../models/Item");
 const asyncHandler = require("express-async-handler");
-const { json } = require("express");
+
+// @desc    Get all items
+// @route   GET /items
+// @access  Public
 
 const getAllItems = asyncHandler(async (req, res) => {
   const items = await Item.find().lean();
@@ -11,6 +14,10 @@ const getAllItems = asyncHandler(async (req, res) => {
 
   res.json(items);
 });
+
+// @desc    Create new item
+// @route   POST /items
+// @access  Public
 
 const createNewItem = asyncHandler(async (req, res) => {
   const { name, description, price, photoURL } = req.body;
@@ -57,6 +64,10 @@ const createNewItem = asyncHandler(async (req, res) => {
       .json({ message: "Item has not been created - Invalid data" });
   }
 });
+
+// @desc    Update item
+// @route   PATCH /items
+// @access  Public
 
 const updateItem = asyncHandler(async (req, res) => {
   const { name, description, price, photoURL } = req.body;
