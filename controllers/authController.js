@@ -7,21 +7,24 @@ const jwt = require("jsonwebtoken");
 // @route   POST /auth/login
 // @access  Public
 const login = asyncHandler(async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password } = req.body; // only username and password are needed to login
 
-  if (!username || !password) {
-    // if username or password is not provided, todo change to handling it seperately with two different response messages
-    return res
-      .status(400)
-      .json({ message: "Please enter username and password" });
+  if (!username) {
+    return res.status(400).json({ message: "Please enter username" });
   }
 
-  const foundUser = await User.findOne({ username }).exec(); // find user by username
+  if (!password) {
+    return res.status(400).json({ message: "Please enter password" });
+  }
 
-  // seperate it later to two different responses
-  if (!foundUser || foundUser.active === false) {
-    // if user is not found or user is not active
-    return res.status(401).json({ message: "User not found or is inactive" });
+  const foundUser = await User.findOne({ username }).exec(); // username is unique, so only one user will be found
+
+  if (!foundUser) {
+    return res.status(401).json({ message: "User not found" });
+  }
+
+  if (!foundUser.isActive) {
+    return res.status(401).json({ message: "User is inactive" });
   }
 
   const isPasswordCorrect = await bcrypt.compare(password, foundUser.password); // compare the password with the hashed password in the database
