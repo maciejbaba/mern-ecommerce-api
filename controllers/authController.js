@@ -23,7 +23,7 @@ const login = asyncHandler(async (req, res) => {
     return res.status(401).json({ message: "User not found" });
   }
 
-  if (!foundUser.isActive) {
+  if (!foundUser.active) {
     return res.status(401).json({ message: "User is inactive" });
   }
 
