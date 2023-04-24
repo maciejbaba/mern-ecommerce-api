@@ -30,7 +30,6 @@ const login = asyncHandler(async (req, res) => {
   const isPasswordCorrect = await bcrypt.compare(password, foundUser.password); // compare the password with the hashed password in the database
 
   if (!isPasswordCorrect) {
-    // if password is not correct
     return res.status(401).json({ message: "Password incorrect" });
   }
 
@@ -40,18 +39,14 @@ const login = asyncHandler(async (req, res) => {
     { expiresIn: "15m" }
   ); // create access token
 
-  const refreshToken = jwt.sign(
-    { id: foundUser._id },
-    process.env.REFRESH_TOKEN_SECRET,
-    { expiresIn: "7d" }
-  ); // create refresh token
-
   res.json({ accessToken });
 });
 
 // @desc    Refresh token
 // @route   GET /auth/refresh
 // @access  Public - because access token expired
+
+// @note    This route is not used in the frontend yet
 const refresh = asyncHandler(async (req, res) => {
   const refreshToken = req.cookies.jwt; // get the refresh token from the cookies
 
