@@ -39,6 +39,6 @@ mongoose.connection.once("open", () => {
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });
 
-mongoose.connection.on("error", (err) => {
+mongoose.connection.on("error", err => {
   console.log(err);
 });
