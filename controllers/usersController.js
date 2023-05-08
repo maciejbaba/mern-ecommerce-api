@@ -50,7 +50,7 @@ const createNewUser = asyncHandler(async (req, res) => {
       password: hashedPassword,
       isAdmin,
     };
-  } 
+  }
 
   // create and store new user
   const user = await User.create(userObject);
@@ -73,11 +73,7 @@ const updateUser = asyncHandler(async (req, res) => {
   const { id, username, isAdmin, active, password } = req.body;
 
   // check data
-  if (
-    !id ||
-    !username ||
-    typeof active !== "boolean"
-  ) {
+  if (!id || !username || typeof active !== "boolean") {
     return res.status(400).json({ message: "All fields are required!" });
   }
 

@@ -9,7 +9,7 @@ const cors = require("cors");
 const corsOptions = require("./config/corsOptions");
 const connectDB = require("./config/dbConnection");
 const mongoose = require("mongoose");
-const PORT = process.env.PORT || 3500;
+const PORT = require("./config/PORT");
 
 console.log(process.env.NODE_ENV);
 
@@ -39,6 +39,6 @@ mongoose.connection.once("open", () => {
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });
 
-mongoose.connection.on("error", (err) => {
+mongoose.connection.on("error", err => {
   console.log(err);
 });
