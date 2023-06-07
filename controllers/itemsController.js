@@ -70,13 +70,13 @@ const createNewItem = asyncHandler(async (req, res) => {
 // @access  Public
 
 const updateItem = asyncHandler(async (req, res) => {
-  const { name, description, price, photoURL } = req.body;
+  const { id, name, description, price, photoURL } = req.body;
 
   if (!name || !description || !price || !photoURL) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  const itemToChange = await Item.findOne({ name }).exec();
+  const itemToChange = await Item.findById(id).exec();
 
   if (!itemToChange) {
     return res
