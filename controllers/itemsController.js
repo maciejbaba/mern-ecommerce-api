@@ -30,6 +30,14 @@ const createNewItem = asyncHandler(async (req, res) => {
   // search for duplicate
   const duplicate = await Item.findOne({ name }).lean().exec();
 
+  if (typeof price !== "number") {
+    return res.status(400).json({ message: "Price must be a number" });
+  }
+
+  if (price < 0) {
+    return res.status(400).json({ message: "Price cannot be negative" });
+  }
+
   if (duplicate) {
     return res
       .status(409) // conflict
@@ -115,7 +123,7 @@ const deleteItem = asyncHandler(async (req, res) => {
 
   if (!itemToDelete) {
     return res
-      .status(400)
+      .status(404)
       .json({ message: "Item with this name has not been found" });
   }
 

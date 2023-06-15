@@ -4,14 +4,38 @@ const baseUrl = "http://localhost:3500";
 
 const fetchAccessToken = async () => {
   const response = await request(baseUrl).post("/auth/login").send({
-    name: "test",
+    username: "test",
     password: "test",
   });
 
-  return response.body.accessToken;
+  const { accessToken } = await response.body;
+
+  return accessToken;
 };
 
-const accessToken = fetchAccessToken();
+const createTestItem = async () => {
+  const accessToken = await fetchAccessToken();
+  const response = await request(baseUrl)
+    .post("/items")
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({
+      name: "test",
+      description: "test",
+      price: 1,
+    });
+  return response;
+};
+
+const deleteTestItem = async () => {
+  const accessToken = await fetchAccessToken();
+  const response = await request(baseUrl)
+    .delete("/items")
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({
+      name: "test",
+    });
+  return response;
+};
 
 describe("Items Controller", () => {
   describe("GET /items", () => {
@@ -22,12 +46,9 @@ describe("Items Controller", () => {
   });
   describe("POST /items", () => {
     test("should create a new item", async () => {
-      const response = await request(baseUrl).post("/items").send({
-        name: "test",
-        description: "test",
-        price: 1,
-      });
+      const response = await createTestItem();
       expect(response.status).toBe(201);
+      deleteTestItem();
     });
     test("should return 400 if name is missing", async () => {
       const response = await request(baseUrl).post("/items").send({
@@ -94,22 +115,39 @@ describe("Items Controller", () => {
 
   describe("DELETE /items", () => {
     test("should delete an item", async () => {
-      const response =  
-        await request(baseUrl).delete("/items").set("Authorization", `Bearer ${accessToken}`)
+      await createTestItem();
+      const response = await deleteTestItem();
+      expect(response.status).toBe(200);
+    });
+    test("should return 400 if name is missing", async () => {
+      const accessToken = await fetchAccessToken();
+      const response = await request(baseUrl)
+        .delete("/items")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({});
+      expect(response.status).toBe(400);
+    });
+    test("should return 400 if name is empty", async () => {
+      const accessToken = await fetchAccessToken();
+      const response = await request(baseUrl)
+        .delete("/items")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({
+          name: "",
+        });
+      expect(response.status).toBe(400);
+    });
+    test("should return 404 if item does not exist", async () => {
+      const accessToken = await fetchAccessToken();
+      // we don't create test item here
+      // in order to create test item we need to call createTestItem() which isn't called in this test
+      const response = await request(baseUrl)
+        .delete("/items")
+        .set("Authorization", `Bearer ${accessToken}`)
         .send({
           name: "test",
         });
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(404);
     });
-    // test("should return 400 if name is missing", async () => {
-    //   const response = await request(baseUrl).delete("/items").send({});
-    //   expect(response.status).toBe(400);
-    // });
-    // test("should return 400 if name is empty", async () => {
-    //   const response = await request(baseUrl).delete("/items").send({
-    //     name: "",
-    //   });
-    //   expect(response.status).toBe(400);
-    // });
   });
 });
