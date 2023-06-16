@@ -1,3 +1,4 @@
+const { id } = require("date-fns/locale");
 const Item = require("../models/Item");
 const asyncHandler = require("express-async-handler");
 
@@ -27,9 +28,6 @@ const createNewItem = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  // search for duplicate
-  const duplicate = await Item.findOne({ name }).lean().exec();
-
   if (typeof price !== "number") {
     return res.status(400).json({ message: "Price must be a number" });
   }
@@ -37,6 +35,9 @@ const createNewItem = asyncHandler(async (req, res) => {
   if (price < 0) {
     return res.status(400).json({ message: "Price cannot be negative" });
   }
+
+  // search for duplicate
+  const duplicate = await Item.findOne({ name }).lean().exec();
 
   if (duplicate) {
     return res
@@ -65,7 +66,7 @@ const createNewItem = asyncHandler(async (req, res) => {
   const item = await Item.create(itemObject);
 
   if (item) {
-    res.status(201).json({ message: "New item has been created!" });
+    res.status(201).json({ message: "New item has been created" });
   } else {
     res
       .status(400)
@@ -78,13 +79,17 @@ const createNewItem = asyncHandler(async (req, res) => {
 // @access  Public
 
 const updateItem = asyncHandler(async (req, res) => {
-  const { name, description, price, photoURL } = req.body;
+  const { id, name, description, price, photoURL } = req.body;
+
+  if (!id) {
+    return res.status(400).json({ message: "ID is required" });
+  }
 
   if (!name || !description || !price || !photoURL) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  const itemToChange = await Item.findOne({ name }).exec();
+  const itemToChange = await Item.findById(id).exec();
 
   if (!itemToChange) {
     return res
@@ -92,22 +97,16 @@ const updateItem = asyncHandler(async (req, res) => {
       .json({ message: "Item with this name has not been found" });
   }
 
-  const duplicate = await Item.findOne({ name }).lean().exec();
-
-  // allow changes to current item
-  if (duplicate && duplicate?._id.toString() !== itemToChange._id.toString()) {
-    return res.status(409).json({ message: "Specified name already exists" });
-  }
-
-  // add logic for newName in order to be able to change name (currently all logic relies on name)
   itemToChange.name = name;
   itemToChange.description = description;
   itemToChange.price = price;
   itemToChange.photoURL = photoURL;
 
   const updatedItem = await itemToChange.save();
-
-  res.json({ message: `Item with ID ${updatedItem._id} has been updated` });
+  if (!updatedItem) {
+    return res.status(400).json({ message: "Item has not been updated" });
+  }
+  res.json({ message: `Item has been updated` });
 });
 
 const deleteItem = asyncHandler(async (req, res) => {

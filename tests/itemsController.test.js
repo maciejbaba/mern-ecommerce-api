@@ -13,6 +13,12 @@ const fetchAccessToken = async () => {
   return accessToken;
 };
 
+const getTestItemId = async () => {
+  const response = await request(baseUrl).get("/items");
+  const testItem = response.body.find((item) => item.name === "test");
+  return testItem._id;
+};
+
 const createTestItem = async () => {
   const accessToken = await fetchAccessToken();
   const response = await request(baseUrl)
@@ -22,6 +28,22 @@ const createTestItem = async () => {
       name: "test",
       description: "test",
       price: 1,
+    });
+  return response;
+};
+
+const updateTestItem = async () => {
+  const accessToken = await fetchAccessToken();
+  const testItemId = await getTestItemId();
+  const response = await request(baseUrl)
+    .patch("/items")
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({
+      id: testItemId,
+      name: "test1",
+      description: "test1",
+      price: 2,
+      photoURL: "test1",
     });
   return response;
 };
@@ -39,16 +61,45 @@ const deleteTestItem = async () => {
 
 describe("Items Controller", () => {
   describe("GET /items", () => {
-    test("should return a list of items", async () => {
+    test("should return 200", async () => {
       const response = await request(baseUrl).get("/items");
       expect(response.status).toBe(200);
     });
+    test("should return an array", async () => {
+      const response = await request(baseUrl).get("/items");
+      expect(response.body).toBeInstanceOf(Array);
+    });
+    test("should return an array with length > 0", async () => {
+      const response = await request(baseUrl).get("/items");
+      expect(response.body.length).toBeGreaterThan(0);
+    });
+    test("should return an array of items", async () => {
+      const response = await request(baseUrl).get("/items");
+      const item = response.body[0];
+      expect(item).toHaveProperty("_id");
+      expect(item).toHaveProperty("name");
+      expect(item).toHaveProperty("description");
+      expect(item).toHaveProperty("price");
+      expect(item).toHaveProperty("photoURL");
+    });
   });
+
   describe("POST /items", () => {
-    test("should create a new item", async () => {
+    test("should return 201 when item created", async () => {
       const response = await createTestItem();
       expect(response.status).toBe(201);
-      deleteTestItem();
+      await deleteTestItem();
+    });
+    test("should return 'New item has been created' when item created", async () => {
+      const response = await createTestItem();
+      expect(response.body.message).toBe("New item has been created");
+      await deleteTestItem();
+    });
+    test("should return 409 if item already exists", async () => {
+      await createTestItem();
+      const response = await createTestItem();
+      expect(response.status).toBe(409);
+      await deleteTestItem();
     });
     test("should return 400 if name is missing", async () => {
       const response = await request(baseUrl).post("/items").send({
@@ -109,6 +160,34 @@ describe("Items Controller", () => {
         description: "test",
         price: -1,
       });
+      expect(response.status).toBe(400);
+    });
+  });
+
+  describe("PATCH /items", () => {
+    test("should return 200 when item updated", async () => {
+      await createTestItem();
+      const response = await updateTestItem();
+      expect(response.status).toBe(200);
+      await deleteTestItem();
+    });
+    test("should return 'Item has been updated' when item updated", async () => {
+      await createTestItem();
+      const response = await updateTestItem();
+      expect(response.body.message).toBe("Item has been updated");
+      await deleteTestItem();
+    });
+    test("should return 400 if id is missing", async () => {
+      const accessToken = await fetchAccessToken();
+      const response = await request(baseUrl)
+        .patch("/items")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({
+          name: "test",
+          description: "test",
+          price: 1,
+          photoURL: "test",
+        });
       expect(response.status).toBe(400);
     });
   });
