@@ -190,6 +190,115 @@ describe("Items Controller", () => {
         });
       expect(response.status).toBe(400);
     });
+    test("should return 400 if name is missing", async () => {
+      const accessToken = await fetchAccessToken();
+      const response = await request(baseUrl)
+        .patch("/items")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({
+          id: "test",
+          description: "test",
+          price: 1,
+          photoURL: "test",
+        });
+      expect(response.status).toBe(400);
+    });
+    test("should return 400 if description is missing", async () => {
+      const accessToken = await fetchAccessToken();
+      const response = await request(baseUrl)
+        .patch("/items")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({
+          id: "test",
+          name: "test",
+          price: 1,
+          photoURL: "test",
+        });
+      expect(response.status).toBe(400);
+    });
+    test("should return 400 if price is missing", async () => {
+      const accessToken = await fetchAccessToken();
+      const response = await request(baseUrl)
+        .patch("/items")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({
+          id: "test",
+          name: "test",
+          description: "test",
+          photoURL: "test",
+        });
+      expect(response.status).toBe(400);
+    });
+    test("should return 400 if name is empty", async () => {
+      const accessToken = await fetchAccessToken();
+      const response = await request(baseUrl)
+        .patch("/items")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({
+          id: "test",
+          name: "",
+          description: "test",
+          price: 1,
+          photoURL: "test",
+        });
+      expect(response.status).toBe(400);
+    });
+    test("should return 400 if description is empty", async () => {
+      const accessToken = await fetchAccessToken();
+      const response = await request(baseUrl)
+        .patch("/items")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({
+          id: "test",
+          name: "test",
+          description: "",
+          price: 1,
+          photoURL: "test",
+        });
+      expect(response.status).toBe(400);
+    });
+    test("should return 400 if price is empty", async () => {
+      const accessToken = await fetchAccessToken();
+      const response = await request(baseUrl)
+        .patch("/items")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({
+          id: "test",
+          name: "test",
+          description: "test",
+          price: "",
+          photoURL: "test",
+        });
+      expect(response.status).toBe(400);
+    });
+    test("should return 400 if price is not a number", async () => {
+      const accessToken = await fetchAccessToken();
+      const response = await request(baseUrl)
+        .patch("/items")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({
+          id: "test",
+          name: "test",
+          description: "test",
+          price: "test",
+          photoURL: "test",
+        });
+      expect(response.status).toBe(400);
+    });
+    test("should return 400 if price is negative", async () => {
+      const accessToken = await fetchAccessToken();
+      const response = await request(baseUrl)
+        .patch("/items")
+        .set("Authorization", `Bearer ${accessToken}`)
+        .send({
+          id: "test",
+          name: "test",
+          description: "test",
+          price: -1,
+          photoURL: "test",
+        });
+      expect(response.status).toBe(400);
+    });
   });
 
   describe("DELETE /items", () => {

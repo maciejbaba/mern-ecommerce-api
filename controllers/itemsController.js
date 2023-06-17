@@ -89,6 +89,14 @@ const updateItem = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "All fields are required" });
   }
 
+  if (typeof price !== "number") {
+    return res.status(400).json({ message: "Price must be a number" });
+  }
+
+  if (price < 0) {
+    return res.status(400).json({ message: "Price cannot be negative" });
+  }
+
   const itemToChange = await Item.findById(id).exec();
 
   if (!itemToChange) {
