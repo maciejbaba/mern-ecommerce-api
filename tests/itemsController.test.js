@@ -16,7 +16,7 @@ const fetchAccessToken = async () => {
 const getTestItemId = async () => {
   const response = await request(baseUrl).get("/items");
   const testItem = response.body.find((item) => item.name === "test");
-  return testItem._id;
+  return testItem._id; // id == _id
 };
 
 const createTestItem = async () => {
@@ -40,7 +40,7 @@ const updateTestItem = async () => {
     .set("Authorization", `Bearer ${accessToken}`)
     .send({
       id: testItemId,
-      name: "test1",
+      name: "test",
       description: "test1",
       price: 2,
       photoURL: "test1",
@@ -50,11 +50,12 @@ const updateTestItem = async () => {
 
 const deleteTestItem = async () => {
   const accessToken = await fetchAccessToken();
+  const testItemId = await getTestItemId();
   const response = await request(baseUrl)
     .delete("/items")
     .set("Authorization", `Bearer ${accessToken}`)
     .send({
-      name: "test",
+      id: testItemId,
     });
   return response;
 };
@@ -307,7 +308,7 @@ describe("Items Controller", () => {
       const response = await deleteTestItem();
       expect(response.status).toBe(200);
     });
-    test("should return 400 if name is missing", async () => {
+    test("should return 400 if id is missing", async () => {
       const accessToken = await fetchAccessToken();
       const response = await request(baseUrl)
         .delete("/items")
@@ -315,25 +316,26 @@ describe("Items Controller", () => {
         .send({});
       expect(response.status).toBe(400);
     });
-    test("should return 400 if name is empty", async () => {
+    test("should return 400 if id is empty", async () => {
       const accessToken = await fetchAccessToken();
       const response = await request(baseUrl)
         .delete("/items")
         .set("Authorization", `Bearer ${accessToken}`)
         .send({
-          name: "",
+          id: "",
         });
       expect(response.status).toBe(400);
     });
     test("should return 404 if item does not exist", async () => {
       const accessToken = await fetchAccessToken();
-      // we don't create test item here
-      // in order to create test item we need to call createTestItem() which isn't called in this test
+      await createTestItem();
+      const testItemId = await getTestItemId();
+      await deleteTestItem();
       const response = await request(baseUrl)
         .delete("/items")
         .set("Authorization", `Bearer ${accessToken}`)
         .send({
-          name: "test",
+          id: testItemId,
         });
       expect(response.status).toBe(404);
     });

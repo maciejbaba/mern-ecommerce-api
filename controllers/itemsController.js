@@ -118,15 +118,15 @@ const updateItem = asyncHandler(async (req, res) => {
 });
 
 const deleteItem = asyncHandler(async (req, res) => {
-  const { name } = req.body;
+  const { id } = req.body;
 
-  if (!name) {
+  if (!id) {
     return res
       .status(400)
       .json({ message: "Name is required in order to delete an item" });
   }
 
-  const itemToDelete = await Item.findOne({ name }).exec();
+  const itemToDelete = await Item.findById(id).exec();
 
   if (!itemToDelete) {
     return res
@@ -136,7 +136,10 @@ const deleteItem = asyncHandler(async (req, res) => {
 
   const deletedItem = await itemToDelete.deleteOne();
 
-  res.json({ message: `Item with name ${deletedItem.name} has been deleted` });
+  if (!deletedItem) {
+    return res.status(400).json({ message: "Item has not been deleted" });
+  }
+  res.json({ message: `Item has been deleted` });
 });
 
 module.exports = {
