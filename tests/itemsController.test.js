@@ -1,3 +1,4 @@
+import { be } from "date-fns/locale";
 import request from "supertest";
 
 const baseUrl = "http://localhost:3500";
@@ -13,6 +14,13 @@ const fetchAccessToken = async () => {
   return accessToken;
 };
 
+let token;
+
+beforeAll(async () => {
+  const accessToken = await fetchAccessToken();
+  token = accessToken;
+});
+
 const getTestItemId = async () => {
   const response = await request(baseUrl).get("/items");
   const testItem = response.body.find((item) => item.name === "test");
@@ -20,10 +28,9 @@ const getTestItemId = async () => {
 };
 
 const createTestItem = async () => {
-  const accessToken = await fetchAccessToken();
   const response = await request(baseUrl)
     .post("/items")
-    .set("Authorization", `Bearer ${accessToken}`)
+    .set("Authorization", `Bearer ${token}`)
     .send({
       name: "test",
       description: "test",
@@ -33,11 +40,10 @@ const createTestItem = async () => {
 };
 
 const updateTestItem = async () => {
-  const accessToken = await fetchAccessToken();
   const testItemId = await getTestItemId();
   const response = await request(baseUrl)
     .patch("/items")
-    .set("Authorization", `Bearer ${accessToken}`)
+    .set("Authorization", `Bearer ${token}`)
     .send({
       id: testItemId,
       name: "test",
@@ -49,11 +55,10 @@ const updateTestItem = async () => {
 };
 
 const deleteTestItem = async () => {
-  const accessToken = await fetchAccessToken();
   const testItemId = await getTestItemId();
   const response = await request(baseUrl)
     .delete("/items")
-    .set("Authorization", `Bearer ${accessToken}`)
+    .set("Authorization", `Bearer ${token}`)
     .send({
       id: testItemId,
     });
@@ -179,10 +184,9 @@ describe("Items Controller", () => {
       await deleteTestItem();
     });
     test("should return 400 if id is missing", async () => {
-      const accessToken = await fetchAccessToken();
       const response = await request(baseUrl)
         .patch("/items")
-        .set("Authorization", `Bearer ${accessToken}`)
+        .set("Authorization", `Bearer ${token}`)
         .send({
           name: "test",
           description: "test",
@@ -192,10 +196,9 @@ describe("Items Controller", () => {
       expect(response.status).toBe(400);
     });
     test("should return 400 if name is missing", async () => {
-      const accessToken = await fetchAccessToken();
       const response = await request(baseUrl)
         .patch("/items")
-        .set("Authorization", `Bearer ${accessToken}`)
+        .set("Authorization", `Bearer ${token}`)
         .send({
           id: "test",
           description: "test",
@@ -205,10 +208,9 @@ describe("Items Controller", () => {
       expect(response.status).toBe(400);
     });
     test("should return 400 if description is missing", async () => {
-      const accessToken = await fetchAccessToken();
       const response = await request(baseUrl)
         .patch("/items")
-        .set("Authorization", `Bearer ${accessToken}`)
+        .set("Authorization", `Bearer ${token}`)
         .send({
           id: "test",
           name: "test",
@@ -218,10 +220,9 @@ describe("Items Controller", () => {
       expect(response.status).toBe(400);
     });
     test("should return 400 if price is missing", async () => {
-      const accessToken = await fetchAccessToken();
       const response = await request(baseUrl)
         .patch("/items")
-        .set("Authorization", `Bearer ${accessToken}`)
+        .set("Authorization", `Bearer ${token}`)
         .send({
           id: "test",
           name: "test",
@@ -231,10 +232,9 @@ describe("Items Controller", () => {
       expect(response.status).toBe(400);
     });
     test("should return 400 if name is empty", async () => {
-      const accessToken = await fetchAccessToken();
       const response = await request(baseUrl)
         .patch("/items")
-        .set("Authorization", `Bearer ${accessToken}`)
+        .set("Authorization", `Bearer ${token}`)
         .send({
           id: "test",
           name: "",
@@ -245,10 +245,9 @@ describe("Items Controller", () => {
       expect(response.status).toBe(400);
     });
     test("should return 400 if description is empty", async () => {
-      const accessToken = await fetchAccessToken();
       const response = await request(baseUrl)
         .patch("/items")
-        .set("Authorization", `Bearer ${accessToken}`)
+        .set("Authorization", `Bearer ${token}`)
         .send({
           id: "test",
           name: "test",
@@ -259,10 +258,9 @@ describe("Items Controller", () => {
       expect(response.status).toBe(400);
     });
     test("should return 400 if price is empty", async () => {
-      const accessToken = await fetchAccessToken();
       const response = await request(baseUrl)
         .patch("/items")
-        .set("Authorization", `Bearer ${accessToken}`)
+        .set("Authorization", `Bearer ${token}`)
         .send({
           id: "test",
           name: "test",
@@ -273,10 +271,9 @@ describe("Items Controller", () => {
       expect(response.status).toBe(400);
     });
     test("should return 400 if price is not a number", async () => {
-      const accessToken = await fetchAccessToken();
       const response = await request(baseUrl)
         .patch("/items")
-        .set("Authorization", `Bearer ${accessToken}`)
+        .set("Authorization", `Bearer ${token}`)
         .send({
           id: "test",
           name: "test",
@@ -287,10 +284,9 @@ describe("Items Controller", () => {
       expect(response.status).toBe(400);
     });
     test("should return 400 if price is negative", async () => {
-      const accessToken = await fetchAccessToken();
       const response = await request(baseUrl)
         .patch("/items")
-        .set("Authorization", `Bearer ${accessToken}`)
+        .set("Authorization", `Bearer ${token}`)
         .send({
           id: "test",
           name: "test",
@@ -309,31 +305,28 @@ describe("Items Controller", () => {
       expect(response.status).toBe(200);
     });
     test("should return 400 if id is missing", async () => {
-      const accessToken = await fetchAccessToken();
       const response = await request(baseUrl)
         .delete("/items")
-        .set("Authorization", `Bearer ${accessToken}`)
+        .set("Authorization", `Bearer ${token}`)
         .send({});
       expect(response.status).toBe(400);
     });
     test("should return 400 if id is empty", async () => {
-      const accessToken = await fetchAccessToken();
       const response = await request(baseUrl)
         .delete("/items")
-        .set("Authorization", `Bearer ${accessToken}`)
+        .set("Authorization", `Bearer ${token}`)
         .send({
           id: "",
         });
       expect(response.status).toBe(400);
     });
     test("should return 404 if item does not exist", async () => {
-      const accessToken = await fetchAccessToken();
       await createTestItem();
       const testItemId = await getTestItemId();
       await deleteTestItem();
       const response = await request(baseUrl)
         .delete("/items")
-        .set("Authorization", `Bearer ${accessToken}`)
+        .set("Authorization", `Bearer ${token}`)
         .send({
           id: testItemId,
         });
