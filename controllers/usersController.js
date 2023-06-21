@@ -73,7 +73,7 @@ const updateUser = asyncHandler(async (req, res) => {
   const { id, username, isAdmin, active, password } = req.body;
 
   // check data
-  if (!id || !username || typeof active !== "boolean") {
+  if (!id || !username) {
     return res.status(400).json({ message: "All fields are required!" });
   }
 
@@ -95,11 +95,14 @@ const updateUser = asyncHandler(async (req, res) => {
   user.active = active;
 
   if (password) {
-    // hash password
     user.password = await bcrypt.hash(password, 10); // 10 stands for amount of salt rounds
   }
 
   const updatedUser = await user.save();
+
+  if (!updatedUser) {
+    return res.status(400).json({ message: "User has not been updated" });
+  }
 
   res.json({ message: `${updatedUser.username} has been updated` });
 });
@@ -121,6 +124,10 @@ const deleteUser = asyncHandler(async (req, res) => {
   }
 
   const deletedUser = await user.deleteOne();
+
+  if (!deletedUser) {
+    return res.status(400).json({ message: "User has not been deleted" });
+  }
 
   const reply = `User ${deletedUser.username} with ID ${deletedUser.id} has been deleted`;
 
