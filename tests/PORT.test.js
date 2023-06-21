@@ -1,6 +1,9 @@
 const PORT = require("../config/PORT");
 
 describe("PORT", () => {
+  test("PORT is defined", () => {
+    expect(PORT).toBeDefined();
+  });
   test("PORT is a number", () => {
     expect(typeof PORT).toBe("number");
   });

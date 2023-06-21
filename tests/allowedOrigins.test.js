@@ -1,15 +1,18 @@
 const allowedOrigins = require("../config/allowedOrigins");
 
 describe("AllowedOrigins", () => {
-  test("allowedOrigins is a object", () => {
-    expect(typeof allowedOrigins).toBe("object");
+  test("allowedOrigins is defined", () => {
+    expect(allowedOrigins).toBeDefined();
+  });
+  test("allowedOrigins is an array", () => {
+    expect(allowedOrigins).toBeInstanceOf(Array);
   });
 
   test("allowedOrigins is not empty", () => {
     expect(allowedOrigins.length).toBeGreaterThan(0);
   });
 
-  test("allowedOrigins are localhost when process.env.NODE_ENV equals development", () => {
+  test("allowedOrigins contains localhost when process.env.NODE_ENV equals development", () => {
     process.env.NODE_ENV = "development";
     const allowedOrigins = require("../config/allowedOrigins");
     expect(
@@ -19,7 +22,7 @@ describe("AllowedOrigins", () => {
     ).toBe(true);
   });
 
-  test("allowedOrigins is vercel when process.env.NODE_ENV equals production", () => {
+  test("allowedOrigins contains vercel when process.env.NODE_ENV equals production", () => {
     jest.resetModules();
     process.env.NODE_ENV = "production";
     const allowedOrigins = require("../config/allowedOrigins");

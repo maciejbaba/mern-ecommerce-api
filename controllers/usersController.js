@@ -58,7 +58,7 @@ const createNewUser = asyncHandler(async (req, res) => {
   if (user) {
     res
       .status(201)
-      .json({ message: `New user ${username} created successfully!` });
+      .json({ message: `New user ${username} created` });
   } else {
     res
       .status(400)

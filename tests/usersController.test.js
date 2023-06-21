@@ -94,24 +94,45 @@ describe("Users controller", () => {
       expect(user).toHaveProperty("active");
       expect(user).toHaveProperty("isAdmin");
     });
-
-    describe("POST /users", () => {
-      test("should return 201", async () => {
-        const response = await createTestUser();
-        expect(response.status).toBe(201);
-        await deleteTestUser();
+  });
+  describe("POST /users", () => {
+    test("should return 201", async () => {
+      const response = await createTestUser();
+      expect(response.status).toBe(201);
+      await deleteTestUser();
+    });
+    test("should return an object", async () => {
+      const response = await createTestUser();
+      expect(response.body).toBeInstanceOf(Object);
+      await deleteTestUser();
+    });
+    test("should return response with message", async () => {
+      const response = await createTestUser();
+      expect(response.body).toHaveProperty("message");
+      await deleteTestUser();
+    });
+    test("should return response with message 'New user test1 created'", async () => {
+      const response = await createTestUser();
+      expect(response.body.message).toBe("New user test1 created");
+      await deleteTestUser();
+    });
+    test("should return 400 if username is not provided", async () => {
+      const response = await request(baseUrl).post("/users").send({
+        password: "test1",
       });
-      test("should return an object", async () => {
-        const response = await createTestUser();
-        expect(response.body).toBeInstanceOf(Object);
-        await deleteTestUser();
+      expect(response.status).toBe(400);
+    });
+    test("should return 400 if password is not provided", async () => {
+      const response = await request(baseUrl).post("/users").send({
+        username: "test1",
       });
-      test("should return an object with username, active, isAdmin", async () => {
-        const response = await createTestUser();
-        const user = response.body;
-        expect(user).toHaveProperty("message");
-        await deleteTestUser();
-      });
+      expect(response.status).toBe(400);
+    });
+    test("should return 409 if username already exists", async () => {
+      await createTestUser();
+      const response = await createTestUser();
+      expect(response.status).toBe(409);
+      await deleteTestUser();
     });
   });
 });
