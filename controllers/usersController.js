@@ -81,7 +81,11 @@ const updateUser = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "User has not been found" });
   }
 
-  const duplicate = await User.findOne({ username }).lean().exec();
+  let duplicate;
+
+  if (username) {
+    duplicate = await User.findOne({ username }).lean().exec();
+  }
 
   // allow update to the current user
   if (duplicate && duplicate?._id.toString() !== id) {
@@ -89,9 +93,17 @@ const updateUser = asyncHandler(async (req, res) => {
   }
   const oldUsername = user.username;
 
-  user.username = username;
-  user.isAdmin = isAdmin;
-  user.active = active;
+  if (username) {
+    user.username = username;
+  }
+
+  if (isAdmin) {
+    user.isAdmin = isAdmin;
+  }
+
+  if (active) {
+    user.active = active;
+  }
 
   if (password) {
     user.password = await bcrypt.hash(password, 10); // 10 stands for amount of salt rounds

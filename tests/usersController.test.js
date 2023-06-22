@@ -159,8 +159,25 @@ describe("Users controller", () => {
     test("should return response with message 'User test1 updated'", async () => {
       await createTestUser();
       const response = await updateTestUser();
-      expect(response.body.message).toBe("User test1 has been updated to test2");
+      expect(response.body.message).toBe(
+        "User test1 has been updated to test2"
+      );
       await deleteUpdatedTestUser();
+    });
+    test("should return response with message 'User test1 has been updated' when username is not changed", async () => {
+      await createTestUser();
+      const id = await fetchTestUserIdByUsername("test1");
+      const response = await request(baseUrl)
+        .patch("/users")
+        .set("Authorization", `Bearer ${token}`)
+        .send({
+          id,
+          password: "test2",
+          active: false,
+          isAdmin: true,
+        });
+      expect(response.body.message).toBe("User test1 has been updated");
+      await deleteTestUser();
     });
     test("should return 400 if id is not provided", async () => {
       await createTestUser();
