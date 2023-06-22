@@ -97,6 +97,7 @@ describe("Users controller", () => {
       expect(user).toHaveProperty("isAdmin");
     });
   });
+
   describe("POST /users", () => {
     test("should return 201", async () => {
       const response = await createTestUser();
@@ -137,6 +138,7 @@ describe("Users controller", () => {
       await deleteTestUser();
     });
   });
+
   describe("PATCH /users", () => {
     test("should return 200", async () => {
       await createTestUser();
@@ -190,6 +192,38 @@ describe("Users controller", () => {
           active: false,
           isAdmin: true,
         });
+      expect(response.status).toBe(400);
+      await deleteTestUser();
+    });
+  });
+
+  describe("DELETE /users", () => {
+    test("should return 200", async () => {
+      await createTestUser();
+      const response = await deleteTestUser();
+      expect(response.status).toBe(200);
+    });
+    test("should return an object", async () => {
+      await createTestUser();
+      const response = await deleteTestUser();
+      expect(response.body).toBeInstanceOf(Object);
+    });
+    test("should return response with message", async () => {
+      await createTestUser();
+      const response = await deleteTestUser();
+      expect(response.body).toHaveProperty("message");
+    });
+    test("should return response with message 'User test1 deleted'", async () => {
+      await createTestUser();
+      const response = await deleteTestUser();
+      expect(response.body.message).toBe("User test1 deleted");
+    });
+    test("should return 400 if id is not provided", async () => {
+      await createTestUser();
+      const response = await request(baseUrl)
+        .delete("/users")
+        .set("Authorization", `Bearer ${token}`)
+        .send({});
       expect(response.status).toBe(400);
       await deleteTestUser();
     });

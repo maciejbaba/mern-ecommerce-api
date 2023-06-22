@@ -146,7 +146,7 @@ const deleteUser = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "User has not been deleted" });
   }
 
-  const reply = `User ${deletedUser.username} with ID ${deletedUser.id} has been deleted`;
+  const reply = `User ${deletedUser.username} deleted`;
 
   res.json({ message: reply });
 });
