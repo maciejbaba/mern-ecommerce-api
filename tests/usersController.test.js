@@ -50,10 +50,12 @@ const deleteTestUser = async () => {
 };
 
 const updateTestUser = async () => {
+  const id = await fetchTestUserIdByUsername("test1");
   const response = await request(baseUrl)
     .patch("/users")
     .set("Authorization", `Bearer ${token}`)
     .send({
+      id,
       username: "test2",
       password: "test2",
       active: false,
@@ -132,6 +134,46 @@ describe("Users controller", () => {
       await createTestUser();
       const response = await createTestUser();
       expect(response.status).toBe(409);
+      await deleteTestUser();
+    });
+  });
+  describe("PATCH /users", () => {
+    test("should return 200", async () => {
+      await createTestUser();
+      const response = await updateTestUser();
+      expect(response.status).toBe(200);
+      await deleteUpdatedTestUser();
+    });
+    test("should return an object", async () => {
+      await createTestUser();
+      const response = await updateTestUser();
+      expect(response.body).toBeInstanceOf(Object);
+      await deleteUpdatedTestUser();
+    });
+    test("should return response with message", async () => {
+      await createTestUser();
+      const response = await updateTestUser();
+      expect(response.body).toHaveProperty("message");
+      await deleteUpdatedTestUser();
+    });
+    test("should return response with message 'User test1 updated'", async () => {
+      await createTestUser();
+      const response = await updateTestUser();
+      expect(response.body.message).toBe("User test1 has been updated to test2");
+      await deleteUpdatedTestUser();
+    });
+    test("should return 400 if id is not provided", async () => {
+      await createTestUser();
+      const response = await request(baseUrl)
+        .patch("/users")
+        .set("Authorization", `Bearer ${token}`)
+        .send({
+          username: "test2",
+          password: "test2",
+          active: false,
+          isAdmin: true,
+        });
+      expect(response.status).toBe(400);
       await deleteTestUser();
     });
   });
