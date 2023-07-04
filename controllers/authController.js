@@ -37,9 +37,9 @@ const login = asyncHandler(async (req, res) => {
     { id: foundUser._id },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: "15m" }
-  ); // create access token
+  );
 
-  res.json({ accessToken });
+  res.json({ accessToken, user: foundUser });
 });
 
 // @desc    Refresh token
