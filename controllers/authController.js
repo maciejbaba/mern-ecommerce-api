@@ -33,13 +33,20 @@ const login = asyncHandler(async (req, res) => {
     return res.status(401).json({ message: "Password incorrect" });
   }
 
+  const returnUser = {
+    id: foundUser._id,
+    username: foundUser.username,
+    isAdmin: foundUser.isAdmin,
+    active: foundUser.active,
+  };
+
   const accessToken = jwt.sign(
     { id: foundUser._id },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: "15m" }
   );
 
-  res.json({ accessToken, user: foundUser });
+  res.json({ accessToken, user: returnUser });
 });
 
 // @desc    Refresh token
