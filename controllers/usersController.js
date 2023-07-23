@@ -56,9 +56,7 @@ const createNewUser = asyncHandler(async (req, res) => {
   const user = await User.create(userObject);
 
   if (user) {
-    res
-      .status(201)
-      .json({ message: `New user ${username} created successfully!` });
+    res.status(201).json({ message: `New user ${username} created` });
   } else {
     res
       .status(400)
@@ -73,7 +71,7 @@ const updateUser = asyncHandler(async (req, res) => {
   const { id, username, isAdmin, active, password } = req.body;
 
   // check data
-  if (!id || !username || typeof active !== "boolean") {
+  if (!id) {
     return res.status(400).json({ message: "All fields are required!" });
   }
 
@@ -83,25 +81,47 @@ const updateUser = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "User has not been found" });
   }
 
-  const duplicate = await User.findOne({ username }).lean().exec();
+  let duplicate;
+
+  if (username) {
+    duplicate = await User.findOne({ username }).lean().exec();
+  }
 
   // allow update to the current user
   if (duplicate && duplicate?._id.toString() !== id) {
     return res.status(409).json({ message: "Username taken" });
   }
+  const oldUsername = user.username;
 
-  user.username = username;
-  user.isAdmin = isAdmin;
-  user.active = active;
+  if (username) {
+    user.username = username;
+  }
+
+  if (isAdmin) {
+    user.isAdmin = isAdmin;
+  }
+
+  if (active) {
+    user.active = active;
+  }
 
   if (password) {
-    // hash password
     user.password = await bcrypt.hash(password, 10); // 10 stands for amount of salt rounds
   }
 
   const updatedUser = await user.save();
 
-  res.json({ message: `${updatedUser.username} has been updated` });
+  if (!updatedUser) {
+    return res.status(400).json({ message: "User has not been updated" });
+  }
+
+  if (oldUsername !== updatedUser.username) {
+    return res.json({
+      message: `User ${oldUsername} has been updated to ${updatedUser.username}`,
+    });
+  }
+
+  res.json({ message: `User ${updatedUser.username} has been updated` });
 });
 
 // @description Delete a user
@@ -122,7 +142,11 @@ const deleteUser = asyncHandler(async (req, res) => {
 
   const deletedUser = await user.deleteOne();
 
-  const reply = `User ${deletedUser.username} with ID ${deletedUser.id} has been deleted`;
+  if (!deletedUser) {
+    return res.status(400).json({ message: "User has not been deleted" });
+  }
+
+  const reply = `User ${deletedUser.username} deleted`;
 
   res.json({ message: reply });
 });

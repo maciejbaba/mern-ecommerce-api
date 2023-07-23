@@ -33,13 +33,20 @@ const login = asyncHandler(async (req, res) => {
     return res.status(401).json({ message: "Password incorrect" });
   }
 
+  const returnUser = { // user to return without the password
+    id: foundUser._id,
+    username: foundUser.username,
+    isAdmin: foundUser.isAdmin,
+    active: foundUser.active,
+  };
+
   const accessToken = jwt.sign(
     { id: foundUser._id },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: "15m" }
-  ); // create access token
+  );
 
-  res.json({ accessToken });
+  res.json({ accessToken, user: returnUser });
 });
 
 // @desc    Refresh token
