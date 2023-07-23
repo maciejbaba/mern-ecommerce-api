@@ -33,7 +33,7 @@ const login = asyncHandler(async (req, res) => {
     return res.status(401).json({ message: "Password incorrect" });
   }
 
-  const returnUser = {
+  const returnUser = { // user to return without the password
     id: foundUser._id,
     username: foundUser.username,
     isAdmin: foundUser.isAdmin,

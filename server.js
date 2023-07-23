@@ -33,9 +33,11 @@ app.use("/", express.static(path.join(__dirname, "public")));
 
 app.use("/", require("./routes/root"));
 
+app.use(requestLimiter); // test this later
+
 app.use("/users", require("./routes/usersRoutes"));
 app.use("/items", require("./routes/itemsRoutes"));
-app.use("/auth", requestLimiter, require("./routes/authRoutes"));
+app.use("/auth", require("./routes/authRoutes"));
 app.all("*", require("./routes/404"));
 
 app.use(errorHandler);
