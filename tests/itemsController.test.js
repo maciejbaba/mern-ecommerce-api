@@ -1,6 +1,7 @@
 import request from "supertest";
 
 const baseUrl = "http://localhost:3500";
+// const baseUrl = "http://192.168.0.14:3500"; // local server ip address
 
 const fetchAccessToken = async () => {
   const response = await request(baseUrl).post("/auth/login").send({
