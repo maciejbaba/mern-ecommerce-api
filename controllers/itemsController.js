@@ -85,7 +85,7 @@ const updateItem = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "ID is required" });
   }
 
-  if (!name || !description || !price || !photoURL) {
+  if (!name || !description || !price) {
     return res.status(400).json({ message: "All fields are required" });
   }
 

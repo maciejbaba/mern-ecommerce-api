@@ -48,7 +48,6 @@ const updateTestItem = async () => {
       name: "test",
       description: "test1",
       price: 2,
-      photoURL: "test1",
     });
   return response;
 };
@@ -190,7 +189,6 @@ describe("Items Controller", () => {
           name: "test",
           description: "test",
           price: 1,
-          photoURL: "test",
         });
       expect(response.status).toBe(400);
     });
@@ -202,7 +200,6 @@ describe("Items Controller", () => {
           id: "test",
           description: "test",
           price: 1,
-          photoURL: "test",
         });
       expect(response.status).toBe(400);
     });
@@ -214,7 +211,6 @@ describe("Items Controller", () => {
           id: "test",
           name: "test",
           price: 1,
-          photoURL: "test",
         });
       expect(response.status).toBe(400);
     });
@@ -226,7 +222,6 @@ describe("Items Controller", () => {
           id: "test",
           name: "test",
           description: "test",
-          photoURL: "test",
         });
       expect(response.status).toBe(400);
     });
@@ -239,7 +234,6 @@ describe("Items Controller", () => {
           name: "",
           description: "test",
           price: 1,
-          photoURL: "test",
         });
       expect(response.status).toBe(400);
     });
@@ -252,7 +246,6 @@ describe("Items Controller", () => {
           name: "test",
           description: "",
           price: 1,
-          photoURL: "test",
         });
       expect(response.status).toBe(400);
     });
@@ -265,7 +258,6 @@ describe("Items Controller", () => {
           name: "test",
           description: "test",
           price: "",
-          photoURL: "test",
         });
       expect(response.status).toBe(400);
     });
@@ -278,7 +270,6 @@ describe("Items Controller", () => {
           name: "test",
           description: "test",
           price: "test",
-          photoURL: "test",
         });
       expect(response.status).toBe(400);
     });
@@ -291,7 +282,6 @@ describe("Items Controller", () => {
           name: "test",
           description: "test",
           price: -1,
-          photoURL: "test",
         });
       expect(response.status).toBe(400);
     });
