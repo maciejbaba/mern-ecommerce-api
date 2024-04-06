@@ -28,8 +28,7 @@ jobs:
           # MONGODB_PASS_HETZNER is the uri with password for hetzner vps
           DATABASE_URI: ${{ secrets.MONGODB_PASS_HETZNER }}
         run: |
-          echo "DATABASE_URI=" > .env
-          echo "$env:$DATABASE_URI" >> .env
+          echo "DATABASE_URI=$env:$DATABASE_URI" > .env
 
       - name: Setup
         run: |
