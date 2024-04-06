@@ -27,12 +27,4 @@ jobs:
       - name: Setup
         run: |
           npm i
-  deploy:
-    runs-on: self-hosted
-    needs: build
-
-    steps:
-
-      - name: Deploy
-        run: |
           npm run start
