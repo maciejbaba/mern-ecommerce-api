@@ -48,10 +48,14 @@ mongoose.connection.once("open", async () => {
 
   // Seed database with default users and items if they don't exist
   await seedDatabase();
-
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });
 
 mongoose.connection.on("error", (err) => {
-  console.log(err);
+  console.log("Database connection error:", err);
+});
+
+// Start server regardless of database connection status
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log("Attempting to connect to database...");
 });
