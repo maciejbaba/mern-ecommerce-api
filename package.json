@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server",
     "dev": "nodemon server",
-    "test": "jest --watchAll --verbose"
+    "test": "jest --watchAll --verbose",
+    "seed": "node scripts/seed.js"
   },
   "repository": {
     "type": "git",

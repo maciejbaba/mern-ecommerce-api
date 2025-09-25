@@ -12,6 +12,7 @@ const cors = require("cors");
 const corsOptions = require("./config/corsOptions");
 
 const connectDB = require("./config/dbConnection");
+const seedDatabase = require("./config/seedDatabase");
 const mongoose = require("mongoose");
 
 const PORT = require("./config/PORT");
@@ -42,8 +43,12 @@ app.all("*", require("./routes/404"));
 
 app.use(errorHandler);
 
-mongoose.connection.once("open", () => {
+mongoose.connection.once("open", async () => {
   console.log("Connected to the database");
+
+  // Seed database with default users and items if they don't exist
+  await seedDatabase();
+
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });
 
