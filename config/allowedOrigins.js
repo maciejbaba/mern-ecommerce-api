@@ -1,7 +1,7 @@
 let allowedOrigins;
 
 if (process.env.NODE_ENV === "production") {
-  allowedOrigins = ["https://mern-ecommerce-beta.vercel.app"];
+  allowedOrigins = ["https://mern.maciejbaba.dev"];
 } else {
   allowedOrigins = [
     "http://localhost:3000",
